@@ -2,8 +2,61 @@ package main
 
 import (
 	"net/http"
+	"strconv"
 	"user/data"
+
+	"github.com/go-chi/chi"
 )
+
+func readIDParam(r *http.Request) int {
+	id := chi.URLParam(r, "id")
+
+	convInt, _ := strconv.Atoi(id)
+
+	return convInt
+}
+
+func (app *Config) getUser(w http.ResponseWriter, r *http.Request) {
+	// Get a user by ID
+
+	id := readIDParam(r)
+
+	user, err := app.Models.User.GetById(id)
+
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	payload := jsonResponse{
+		Error:   false,
+		Message: "User retrieved",
+		Data:    user,
+	}
+
+	app.writeJSON(w, http.StatusOK, payload)
+
+}
+
+func (app *Config) getUsers(w http.ResponseWriter, r *http.Request) {
+	// Get all users
+
+	users, err := app.Models.User.GetAll()
+
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	payload := jsonResponse{
+		Error:   false,
+		Message: "Users retrieved",
+		Data:    users,
+	}
+
+	app.writeJSON(w, http.StatusOK, payload)
+
+}
 
 func (app *Config) createUser(w http.ResponseWriter, r *http.Request) {
 	// Create a new user
@@ -38,13 +91,12 @@ func (app *Config) createUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = app.writeJSON(w, http.StatusCreated, user)
-
-	if err != nil {
-		app.errorJSON(w, err)
-		return
+	payload := jsonResponse{
+		Error:   false,
+		Message: "User created",
+		Data:    user,
 	}
 
-	return
+	app.writeJSON(w, http.StatusCreated, payload)
 
 }
