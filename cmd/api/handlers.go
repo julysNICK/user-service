@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"user/data"
@@ -76,17 +77,23 @@ func (app *Config) createUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	fmt.Println(requestPayload)
+
 	userCreate := data.User{
 		Email:     requestPayload.Email,
 		FirstName: requestPayload.FirstName,
 		LastName:  requestPayload.LastName,
 		Password:  requestPayload.Password,
-		Active:    requestPayload.Active,
 	}
+	fmt.Println("userCreate")
+	fmt.Println(userCreate)
 
 	user, err := app.Models.User.Insert(userCreate)
 
+	fmt.Println("userDB")
+	fmt.Println(user)
 	if err != nil {
+		fmt.Println(err)
 		app.errorJSON(w, err)
 		return
 	}
