@@ -51,6 +51,8 @@ func main() {
 }
 
 func openDB(dsn string) (*sql.DB, error) {
+	fmt.Println("dsn user")
+	fmt.Println(dsn)
 	db, err := sql.Open("pgx", dsn)
 
 	if err != nil {
@@ -66,6 +68,8 @@ func openDB(dsn string) (*sql.DB, error) {
 func connectToDb() *sql.DB {
 	dsn := os.Getenv("DSN")
 
+	fmt.Println("dsn users")
+	fmt.Println(dsn)
 	for {
 		connection, err := openDB(dsn)
 
