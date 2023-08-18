@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package user;
+
+option go_package = "/user";
+
+message User {
+    string email = 1;
+    string firstName = 2;
+    string password = 3;
+}
+
+message UserRequestDelete {
+    string email = 1;
+}
+
+message UserResponseDelete {
+    string email = 1;
+    string message = 2;
+}
+
+service UserService {
+  rpc DeleteUser(UserRequestDelete) returns (UserResponseDelete);
+}

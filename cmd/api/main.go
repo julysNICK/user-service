@@ -15,6 +15,7 @@ import (
 )
 
 const webPort = "80"
+const grpcPort = "5002"
 
 var counts int64
 
