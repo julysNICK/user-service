@@ -4,14 +4,17 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"time"
 	"user/data"
+	user "user/users"
 
 	_ "github.com/jackc/pgconn"
 	_ "github.com/jackc/pgx/v4"
 	_ "github.com/jackc/pgx/v4/stdlib"
+	"google.golang.org/grpc"
 )
 
 const webPort = "80"
@@ -39,6 +42,8 @@ func main() {
 		Models: data.New(conn),
 	}
 
+	go app.GRPCListen()
+
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%s", webPort),
 		Handler: app.routes(),
@@ -48,6 +53,24 @@ func main() {
 
 	if err != nil {
 		log.Fatal(err)
+	}
+}
+
+func (app *Config) GRPCListen() {
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", grpcPort))
+
+	if err != nil {
+		log.Fatal("Listener error", err)
+	}
+
+	s := grpc.NewServer()
+
+	user.RegisterUserServiceServer(s, &UserServer{
+		Models: app.Models,
+	})
+
+	if err := s.Serve(lis); err != nil {
+		log.Fatal("failed to serve: ", err)
 	}
 }
 
